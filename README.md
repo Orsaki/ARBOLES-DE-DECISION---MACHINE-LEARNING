@@ -1,4 +1,4 @@
-# Predicción de Reincidencia Penal con Árboles de Decisión (CART) y Justicia Predictiva
+# Predicción de Reincidencia Penal con Árboles de Decisión (CART)
 
 Proyecto de clasificación supervisada aplicado al dataset de libertad condicional de Pensilvania (Parole). El objetivo fue modelar el riesgo de violación de la condicional o reincidencia penal, priorizando la detección de casos de riesgo (Recall / Sensibilidad) sobre una base fuertemente desbalanceada.
 
@@ -9,7 +9,7 @@ Proyecto de clasificación supervisada aplicado al dataset de libertad condicion
 Para evitar cualquier fuga de datos (data leakage), el 20% de los datos se separó al inicio como conjunto de prueba (Test). La codificación One-Hot, el balanceo por sobremuestreo y el ajuste del árbol se ejecutaron dentro de cada partición de validación cruzada:
 
 <div align="center">
-  <img src="pipeline_arbol.png" alt="Pipeline de Modelado Árbol CART" width="800">
+  <img src="pipeline_arbol.jpg" alt="Pipeline de Modelado Árbol CART" width="800">
 </div>
 
 ---
@@ -50,14 +50,14 @@ Se evaluaron 9 estrategias de balanceo mediante GridSearchCV con 5-Fold Stratifi
 El modelo generado es compacto e interpretable, facilitando la auditoría de cada regla de decisión:
 
 <div align="center">
-  <img src="arbol_decision.png" alt="Estructura del Árbol de Decisión Final" width="800">
+  <img src="estructura_arbol.png" alt="Estructura del Árbol de Decisión Final" width="800">
 </div>
 
 ### Importancia de Variables y Reglas Principales
 1. **Estado_Virginia (59.77% de importancia):** Es la división raíz del árbol. Fuera de Virginia se clasifica como riesgo de reincidencia en la mayoría de los perfiles, salvo casos sin múltiples ofensas previas y con delitos de tránsito.
 2. **Ofensas_No (22.91% de importancia):** La ausencia de múltiples condenas previas actúa como un fuerte reductor del riesgo estimado.
 3. **Crimen_Transito (6.20%), Sentencia (3.34%) y Tiempo (3.31%):** Modulan las predicciones en ramas específicas.
-4. **Atributos sensibles:** Género no fue utilizado en las divisiones, mientras que Raza aparece en un corte pero ambas ramas asignan la misma clase final (1), evidenciando que no altera la decisión final del clasificador.
+4. **Atributos de control:** Género no fue utilizado en las divisiones, mientras que Raza aparece en un corte pero ambas ramas asignan la misma clase final (1), evidenciando que no altera la decisión final del clasificador.
 
 ---
 
@@ -71,19 +71,11 @@ Evaluación final sobre el 20% de datos apartados (135 casos de prueba):
 * **Accuracy:** 60.74%
 * **ROC-AUC:** 0.7623
 
-### Matriz de Confusión
+### Desglose de Predicciones
 
-<div align="center">
-  <img src="matriz_confusion.png" alt="Matriz de Confusión Árbol CART" width="480">
-</div>
-
-* **Verdaderos Negativos (TN):** 69 personas sin reincidencia clasificadas correctamente.
-* **Falsos Positivos (FP):** 50 personas que cumplieron su condicional pero fueron marcadas como riesgo potencial.
-* **Falsos Negativos (FN):** 3 casos de reincidencia no detectados.
-* **Verdaderos Positivos (TP):** 13 reincidencias detectadas oportunamente.
-
----
-
-## 6. Consideraciones Éticas en Justicia Predictiva
-
-Al priorizar el Recall para minimizar el riesgo público, el modelo presenta una precisión de 20.63%, lo que significa que aproximadamente 4 de cada 5 personas señaladas como riesgo habrían cumplido su libertad condicional sin infracciones. Asimismo, la fuerte dependencia de la variable jurisdiccional (Estado) refleja disparidades en las tasas de arresto o supervisión local antes que factores criminológicos individuales. Por estas razones, este tipo de herramientas debe concebirse como apoyo para asignar recursos de supervisión y rehabilitación, nunca como criterio automatizado determinante para revocar o denegar derechos de libertad.
+| Métrica | Recuento | Interpretación Práctica |
+| :--- | :---: | :--- |
+| **Verdaderos Negativos (TN)** | 69 | Personas sin reincidencia clasificadas correctamente. |
+| **Falsos Positivos (FP)** | 50 | Personas que cumplieron su condicional pero fueron marcadas como riesgo potencial. |
+| **Falsos Negativos (FN)** | 3 | Casos de reincidencia no detectados. |
+| **Verdaderos Positivos (TP)** | 13 | Reincidencias detectadas oportunamente. |
